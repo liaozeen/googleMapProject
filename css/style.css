@@ -1,0 +1,54 @@
+html,
+body {
+height: 100%;
+margin: 0;
+padding: 0;
+}
+
+#map{
+	bottom:0px;
+	height: 100%;
+	left: 0px;
+	right: 0px;
+    position: fixed;
+}
+
+#container{
+	height: 100%;
+	width: 300px;
+    position: fixed;
+    left: 0px;
+    top: 0px;
+    background-color:rgba(39, 55, 70,0.8)
+}
+
+#topBar{
+	height: 70px;
+	width: 100%;
+	position: absolute;
+	background-color:rgb(39, 55, 70)
+
+}
+#list{
+	top: 60px;
+	height: 100px;
+	position: absolute;
+}
+#input{
+	position: absolute;
+	height: 20px;
+	width: 250px;
+	left: 20px;
+	top: 20px;
+	border-radius: 5px
+}
+
+.list-title{
+	color: #FFF;
+	font-size: 18px;
+    list-style: none;
+    padding: 3px;
+    margin: 10px 0px 7px 0px;
+    border-color:#00E5FF;
+    border-style: none none double none;
+}
