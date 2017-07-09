@@ -68,5 +68,9 @@ padding: 0;
 
 #pano{
 	width: 200px;
-	height: 200px;
+	text-align:center;
+}
+
+#wiki{
+	width: 200px;
 }

@@ -72,22 +72,29 @@ function initMap(){
 
 	function populateInfoWindow(marker, infowindow) {
 	    if (infowindow.marker != marker) {
-	      infowindow.setContent('');
-	      infowindow.marker = marker;
+		    infowindow.setContent('');
+		    infowindow.marker = marker;
 
-	      infowindow.addListener('closeclick',function(){
-	        infowindow.marker = null;
-	      });
+		    infowindow.addListener('closeclick',function(){
+		        infowindow.marker = null;
+		    });
 
-	      var streetViewService = new google.maps.StreetViewService();
-	      var radius = 100;
+		    var streetViewService = new google.maps.StreetViewService();
+		    var radius = 100;
+
+
+		    var markertitle = marker.title;
+		    var wikiUrl = 'https://zh.wikipedia.org/w/api.php?action=opensearch&search='+markertitle+'&format=json&callback=wikiCallback';
+
 
 	      function getStreetView(data, status) {
-	      	console.log(data)
+	      	console.log(data);
 	        if (status == google.maps.StreetViewStatus.OK) {
 	          var nearStreetViewLocation = data.location.latLng;
 	          var heading = google.maps.geometry.spherical.computeHeading(nearStreetViewLocation, marker.position);
-	            infowindow.setContent('<div id="markertitle">' + marker.title + '</div><div id="pano"></div>');
+
+	          $("#pano").css('height','200px');
+
 	            var panoramaOptions = {
 	              position: nearStreetViewLocation,
 	              pov: {
@@ -95,14 +102,50 @@ function initMap(){
 	                pitch: 30
 	              }
 	            };
+
 	          var panorama = new google.maps.StreetViewPanorama(
 	            document.getElementById('pano'), panoramaOptions);
 	        } else {
-	          infowindow.setContent('<div>' + marker.title + '</div>' +
-	            '<div>此处没有街景地图</div>');
+	        	$("#pano").text("");
+	        	$("#pano").append('<p>===此处没有街景地图===</p>');
 	        }
 	      }
 
+	      function getWiki(){
+	          $.ajax({
+                url:wikiUrl,
+                dataType:"jsonp",
+                success:function(data){
+                	console.log(data);
+                    var articleHealine= data[1];
+                    var articleSummary = data[2];
+                    var articleUrl = data[3];
+
+                    for(var i=0;i<articleHealine.length;i++){
+                        if(articleHealine[i]===markertitle){
+                        	console.log(articleSummary[i]);
+                        	console.log(articleUrl[i]);
+                            $("#wiki").append('<p>'+articleSummary[i]+'</p>'+' '+'<a href="'+articleUrl[i]+'">'+'维基百科：'+articleHealine[i]+'</a>');
+                        }
+                    }
+
+                    console.log($("#wiki").text());
+
+                    if($("#wiki").text()===""){
+                    	$("#wiki").css('text-align','center');
+                    	$("#wiki").append('<p>===没有相关的维基百科===</p>');
+                    }
+                }
+            });
+	      }
+
+	      infowindow.setContent(
+        	    '<div id="markertitle">' + marker.title +
+        	    '</div><div id="pano"></div>'+
+        	    '<div id="wiki"></div>'
+        	);
+
+	      getWiki();
 	      streetViewService.getPanoramaByLocation(marker.position, radius, getStreetView);
 
 	      infowindow.open(map, marker);
