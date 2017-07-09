@@ -10,12 +10,10 @@
     <div id="container">
         <div id="topBar">
         	<input  id="input" placeholder="输入地址..." type="text" data-bind="textInput:inputValue">
-        <ul id="list" data-bind="foreach:list">
+       </div>
+       <ul id="list" data-bind="foreach:list">
             <li class="list-title" data-bind="text: title,click:$parent.clickLocation"></li>
         </ul>
-
-
-    </div>
 
 	<script src="js/knockout-3.4.2.js"></script>
 	<script src="js/jquery.min.js"></script>

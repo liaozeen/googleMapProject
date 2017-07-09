@@ -12,7 +12,16 @@ var locations = [
 	  {title: '广州动物园', location: {lat:23.139983, lng:113.305693}},
 	  {title: '华南植物园', location: {lat:23.18684, lng: 113.364208}},
 	  {title: '长隆欢乐世界', location: {lat: 22.99665, lng:113.328853}},
-	  {title: '广东省博物馆', location: {lat: 23.11476, lng: 113.326313}}
+	  {title: '广东省博物馆', location: {lat: 23.11476, lng: 113.326313}},
+	  {title: '光孝寺', location: {lat:23.129482, lng:113.256333}},
+	  {title: '南越国宫署遗址', location: {lat:23.126417, lng:113.270057}},
+	  {title: '黄埔军校旧址纪念馆', location: {lat:23.086484, lng:113.425263}},
+	  {title: '广东科学中心', location: {lat:23.041875, lng:113.364969}},
+	  {title: '广东广雅中学', location: {lat: 23.137097, lng:113.241103}},
+	  {title: '孙中山大元帅府纪念馆', location: {lat:23.109774, lng: 113.278999}},
+	  {title: '天主教露德圣母堂', location: {lat:23.107314, lng:113.247682}},
+	  {title: '三元宫', location: {lat: 23.134744, lng:113.263246}},
+	  {title: '星海音乐学院', location: {lat:23.149802, lng:113.304132}},
 	];
 
 function initMap(){
