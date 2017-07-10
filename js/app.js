@@ -87,7 +87,7 @@ function initMap(){
 		    console.log(marker);
 
 		    var wikiUrl = 'https://zh.wikipedia.org/w/api.php?action=opensearch&search='+markertitle+'&format=json&callback=wikiCallback';
-		    var stationUrl = 'http://api.jisuapi.com/transit/nearby?city=广州&address='+markertitle+'&appkey=4c76bff3355f585d';
+		    var stationUrl = 'https://api.jisuapi.com/transit/nearby?city=广州&address='+markertitle+'&appkey=4c76bff3355f585d';
 		    var weatherUrl = 'https://api.caiyunapp.com/v2/TAkhjf8d1nlSlspN/'+marker.lng+','+marker.lat+'/realtime.json';
 
 		    function getStreetView(data, status) {
@@ -263,7 +263,7 @@ function initMap(){
 
 	function makeMarkerIcon(markerColor) {
 	    var markerImage = new google.maps.MarkerImage(
-	        'http://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|'+ markerColor +
+	        'https://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|'+ markerColor +
 	        '|40|_|%E2%80%A2',
 	        new google.maps.Size(21, 34),
 	        new google.maps.Point(0, 0),
