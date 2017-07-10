@@ -48,6 +48,9 @@ function initMap(){
 			id:i,
 		});
 
+		marker.lat = position.lat;
+		marker.lng = position.lng;
+
 		markers.push(marker);
 		locations[i].marker = marker;
 
@@ -81,9 +84,11 @@ function initMap(){
 
 
 		    var markertitle = marker.title;
+		    console.log(marker);
+
 		    var wikiUrl = 'https://zh.wikipedia.org/w/api.php?action=opensearch&search='+markertitle+'&format=json&callback=wikiCallback';
 		    var stationUrl = 'http://api.jisuapi.com/transit/nearby?city=广州&address='+markertitle+'&appkey=4c76bff3355f585d';
-
+		    var weatherUrl = 'https://api.caiyunapp.com/v2/TAkhjf8d1nlSlspN/'+marker.lng+','+marker.lat+'/realtime.json';
 
 		    function getStreetView(data, status) {
 		      	console.log(data);
@@ -136,20 +141,23 @@ function initMap(){
 		      }
 
 		    function getStation(){
+		    	console.log("公交API请求函数已调用");
 		      	$.ajax({
 	                url:stationUrl,
 	                dataType:"jsonp",
 	                success:function(data){
 	                	console.log(data);
 
+
 	                	if(data.status==='0'){
 	                		var nearbyStation =data.result;
 
 	                		for(var i= 0;i<5;i++){
-	                			var station = nearbyStation[i].station;
-	                			var distance = nearbyStation[i].distance;
+	                			var nearStation = nearbyStation[i].station;
+	                			var nearDistance = nearbyStation[i].distance;
 
-	                			$('#stationList').append('<li><span>'+station+'——'+distance+'米'+'</span></li>');
+
+	                			$('#stationList').append('<li><span>'+nearStation+'——'+nearDistance+'米'+'</span></li>');
 	                		}
 	                	}else{
 	                		$('#stationList').append('<p>错误提示：'+data.msg+'</p>');
@@ -159,15 +167,94 @@ function initMap(){
 	            });
 		    }
 
+		    function getWeather(){
+		    	console.log("天气API请求函数已调用");
+		    	console.log(weatherUrl);
+		    	$.ajax({
+		    		url:weatherUrl,
+		    		dataType:"jsonp",
+		    		success:function(data){
+	                	console.log(data);
+
+	                	var realtimeweather = data.result;
+
+	                	if(data.status==='ok'){
+	                		var temperature = realtimeweather.temperature;
+
+	                		var skycon ;
+                			switch(realtimeweather.skycon){
+                				case "CLEAR_DAY":
+                					skycon = "晴";
+                					break;
+                				case "CLEAR_NIGHT":
+                					skycon = "晴";
+                					break;
+                				case "PARTLY_CLOUDY_DAY":
+                				    skycon =  "多云";
+                				    break;
+                				case "PARTLY_CLOUDY_NIGHT":
+                					skycon =  "多云";
+                					break;
+                				case "CLOUDY":
+                					skycon = "阴";
+                					break;
+                				case "RAIN":
+                					skycon = "雨";
+                					break;
+                				case "SNOW":
+                					skycon = "雪";
+                					break;
+                				case "WIND":
+                					skycon = "风";
+                					break;
+                				case "FOG":
+                					skycon = "雾";
+                					break;
+                		    }
+
+	                		var pm25 = realtimeweather.pm25;
+	                		//0.03-0.25是小雨，0.25-0.35是中雨, 0.35以上是大雨
+	                		if(realtimeweather.precipitation.local.status==='ok'){
+	                			var precipitation = realtimeweather.precipitation.local.intensity;
+	                			if(precipitation<0.03){
+	                				precipitation = "无雨";
+	                			}else if(0.03<=precipitation<0.25){
+	                				precipitation = "小雨";
+	                			}else if(0.25<=precipitation<0.35){
+	                				precipitation = "中雨";
+	                			}else if(0.35<=precipitation){
+	                				precipitation = "大雨";
+	                			}
+	                		}
+
+
+	                		$('#weather').append('<li>温度：'+temperature+'</li>'+
+	                			'<li>天气：'+skycon+'</li>'+
+	                			'<li>降雨情况：'+precipitation+'</li>'+
+	                			'<li>pm25值：'+pm25+'</li>'+
+	                			'<li>来源：<a href="https://caiyunapp.com/">彩云天气</a></li>'
+	                			);
+
+	                	}else{
+	                		$('#weather').append('<p>错误提示：'+data.error+'</p>');
+	                	}
+
+	                }
+		    	});
+
+		    }
+
 	        infowindow.setContent(
-	    	    '<div id="Information"><div id="markertitle">' + marker.title +
-	    	    '</div><div id="pano">街景地图正在加载...</div>'+
+	    	    '<div id="markertitle">' + marker.title +
+	    	    '</div><div id="Information"><div id="pano">街景地图正在加载...</div>'+
 	    	    '<div id="wiki"></div>'+
-	    	    '<div><h4>附近的公交站有：</h4><ul id="stationList"></ul></div></div>'
+	    	    '<div><h4>附近的公交站有：</h4><ul id="stationList"></ul></div>'+
+	    	    '<div><h4>实时天气：</h4><ul id="weather"></ul></div></div>'
 	    	);
 
 		    getStation();
 		    getWiki();
+		    getWeather();
 		    streetViewService.getPanoramaByLocation(marker.position, radius, getStreetView);
 
         	infowindow.open(map, marker);
