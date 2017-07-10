@@ -57,9 +57,14 @@ padding: 0;
     border-style: none none double none;
     cursor: pointer;
 }
+#Information{
+	overflow: auto;
+	height: 300px;
+	width: 225px;
+}
 
 #markertitle{
-	width: 200px;
+	width: 100%;
 	font-weight:bold;
 	font-size:16px;
 	text-align:center;
@@ -67,10 +72,10 @@ padding: 0;
 }
 
 #pano{
-	width: 200px;
+	width: 100%;
 	text-align:center;
 }
 
 #wiki{
-	width: 200px;
+	width: 100%;
 }
