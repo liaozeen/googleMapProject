@@ -1,4 +1,5 @@
 var map;
+//创建一个全局的空数组，用于存储实例化后的标记marker
 var markers = [];
 var locations = [
 	    {title: '中山大学北校区', location: {lat:23.129857, lng: 113.291691}},
@@ -25,39 +26,51 @@ var locations = [
 	];
 
 function initMap(){
+	//生成一个地图实例
     map = new google.maps.Map(document.getElementById('map'), {
       	center: {lat: 23.109464, lng: 113.318485},
       	zoom: 10,
       	mapTypeControl: false
     });
 
+    //生成信息窗口实例
     var largeInfowindow = new google.maps.InfoWindow();
 
+    //标记的颜色变量，作为marker的属性icon的值
     var defaultIcon = makeMarkerIcon('0091ff');
     var highlightedIcon = makeMarkerIcon('FFFF24');
 
+    //遍历地址数组locations的元素，生成对应的标记对象marker
 	for(var i=0;i<locations.length;i++){
 		var position = locations[i].location;
 		var title = locations[i].title;
 
+		//生成标记对象实例
 		var marker = new google.maps.Marker({
 			position:position,
 			title:title,
+			//标记的样式
 			icon: defaultIcon,
+			//标记下落的动画效果
 			animation: google.maps.Animation.DROP,
 			id:i,
 		});
 
+		//为marker添加新的属性：lat和lng，以便后面的API请求使用标记的经纬度值
 		marker.lat = position.lat;
 		marker.lng = position.lng;
 
+		//将生成的marker对象添加到数组对象markers中
 		markers.push(marker);
+		//为locations的每个元素添加新的属性：marker对象，以便ViewModel调用
 		locations[i].marker = marker;
 
+		//当标记被点击时，显示信息窗口
 		marker.addListener('click', function() {
         	populateInfoWindow(this, largeInfowindow);
         });
 
+		//当标记被点击时，标记的颜色改变并出现弹跳效果，2秒后恢复原来的颜色并停止弹跳
 	    marker.addListener('click', function() {
 	        this.setIcon(highlightedIcon);
 	        this.setAnimation(google.maps.Animation.BOUNCE);
@@ -75,27 +88,32 @@ function initMap(){
 		    infowindow.setContent('');
 		    infowindow.marker = marker;
 
+		    //当信息窗口关闭时，清空infowindow的marker属性
 		    infowindow.addListener('closeclick',function(){
 		        infowindow.marker = null;
 		    });
 
+		    //生成街景地图实例
 		    var streetViewService = new google.maps.StreetViewService();
+		    //该变量的作用是寻找标记所在位置的半径为100米内的街景地图
 		    var radius = 100;
 
-
 		    var markertitle = marker.title;
-		    console.log(marker);
 
+		    //API的请求格式
 		    var wikiUrl = 'https://zh.wikipedia.org/w/api.php?action=opensearch&search='+markertitle+'&format=json&callback=wikiCallback';
 		    var stationUrl = 'https://api.jisuapi.com/transit/nearby?city=广州&address='+markertitle+'&appkey=4c76bff3355f585d';
 		    var weatherUrl = 'https://api.caiyunapp.com/v2/TAkhjf8d1nlSlspN/'+marker.lng+','+marker.lat+'/realtime.json';
 
+		    //谷歌街景地图API请求
 		    function getStreetView(data, status) {
 		      	console.log(data);
-
+		      	//请求成功，在信息窗口显示标记附近的街景地图
 		        if (status == google.maps.StreetViewStatus.OK) {
 		            var nearStreetViewLocation = data.location.latLng;
 		            var heading = google.maps.geometry.spherical.computeHeading(nearStreetViewLocation, marker.position);
+
+		            //清空#pano的原内容，更改height属性的值，使得街景地图可以在信息窗口显示出来
 		            $("#pano").text("");
 		            $("#pano").css('height','200px');
 
@@ -109,29 +127,34 @@ function initMap(){
 
 		            var panorama = new google.maps.StreetViewPanorama(
 		                document.getElementById('pano'), panoramaOptions);
+		        //处理错误
 		        }else {
 		        	   $("#pano").text("");
 		        	   $("#pano").append('<p>===此处没有街景地图===</p>');
 		         }
 		    }
 
+		    //维基百科API请求
 		    function getWiki(){
 		        $.ajax({
+		        	//请求地址
 	                url:wikiUrl,
+	                //响应的数据格式
 	                dataType:"jsonp",
+	                //请求成功，运行该函数
 	                success:function(data){
 		                console.log(data);
-
+		                //分别获取维基百科的标题、文章概要和文章地址
 		                var articleHealine= data[1];
 		                var articleSummary = data[2];
 		                var articleUrl = data[3];
-
+		                //筛选返回的结果，只显示维基百科的文章标题和标记的名称相一致的结果
 		                for(var i=0;i<articleHealine.length;i++){
 		                    if(articleHealine[i]===markertitle){
 		                        $("#wiki").append('<p>'+articleSummary[i]+'</p>'+' '+'<a href="'+articleUrl[i]+'">'+'维基百科：'+articleHealine[i]+'</a>');
 		                    }
 		                }
-
+		                //如果没有与标记的名称相同的维基百科内容，则在信息窗口显示错误提示
 		                if($("#wiki").text()===""){
 		                	$("#wiki").css('text-align','center');
 		                	$("#wiki").append('<p>===没有相关的维基百科===</p>');
@@ -140,26 +163,27 @@ function initMap(){
 	            });
 		      }
 
+		    //附近公交站API请求
 		    function getStation(){
-		    	console.log("公交API请求函数已调用");
+		    	console.log("公交API请求函数已运行");
 		      	$.ajax({
 	                url:stationUrl,
 	                dataType:"jsonp",
 	                success:function(data){
 	                	console.log(data);
 
-
+	                	//请求成功
 	                	if(data.status==='0'){
 	                		var nearbyStation =data.result;
-
+	                		//在信息窗口显示最多五个公交站信息
 	                		for(var i= 0;i<5;i++){
 	                			var nearStation = nearbyStation[i].station;
 	                			var nearDistance = nearbyStation[i].distance;
 
-
 	                			$('#stationList').append('<li><span>'+nearStation+'——'+nearDistance+'米'+'</span></li>');
 	                		}
 	                	}else{
+	                		//处理错误，并显示在信息窗口
 	                		$('#stationList').append('<p>错误提示：'+data.msg+'</p>');
 	                	}
 
@@ -167,20 +191,23 @@ function initMap(){
 	            });
 		    }
 
+		    //彩云天气API请求
 		    function getWeather(){
-		    	console.log("天气API请求函数已调用");
-		    	console.log(weatherUrl);
+		    	console.log("天气API请求函数已运行");
+
+		    	//使用jQuery调用API
 		    	$.ajax({
 		    		url:weatherUrl,
 		    		dataType:"jsonp",
 		    		success:function(data){
 	                	console.log(data);
-
+	                	//将响应的结果result赋予变量realtimeweather
 	                	var realtimeweather = data.result;
-
+	                	//如果status为ok，即有可用数据返回，立即调用返回的数据
 	                	if(data.status==='ok'){
+	                		//温度变量
 	                		var temperature = realtimeweather.temperature;
-
+	                		//天气状况变量，根据返回的值转换为中文
 	                		var skycon ;
                 			switch(realtimeweather.skycon){
                 				case "CLEAR_DAY":
@@ -211,7 +238,7 @@ function initMap(){
                 					skycon = "雾";
                 					break;
                 		    }
-
+                		    //PM2.5变量
 	                		var pm25 = realtimeweather.pm25;
 	                		//0.03-0.25是小雨，0.25-0.35是中雨, 0.35以上是大雨
 	                		if(realtimeweather.precipitation.local.status==='ok'){
@@ -227,23 +254,24 @@ function initMap(){
 	                			}
 	                		}
 
-
+	                		//在信息窗口信息标记所在位置的实时天气情况
 	                		$('#weather').append('<li>温度：'+temperature+'</li>'+
 	                			'<li>天气：'+skycon+'</li>'+
 	                			'<li>降雨情况：'+precipitation+'</li>'+
-	                			'<li>pm25值：'+pm25+'</li>'+
+	                			'<li>PM2.5：'+pm25+'</li>'+
 	                			'<li>来源：<a href="https://caiyunapp.com/">彩云天气</a></li>'
 	                			);
 
 	                	}else{
+	                		//处理错误，并显示在信息窗口
 	                		$('#weather').append('<p>错误提示：'+data.error+'</p>');
 	                	}
 
 	                }
 		    	});
-
 		    }
 
+		    //为标记的信息窗口添加内容
 	        infowindow.setContent(
 	    	    '<div id="markertitle">' + marker.title +
 	    	    '</div><div id="Information"><div id="pano">街景地图正在加载...</div>'+
@@ -252,15 +280,18 @@ function initMap(){
 	    	    '<div><h4>实时天气：</h4><ul id="weather"></ul></div></div>'
 	    	);
 
+	        //运行API的函数，发出请求并处理响应，根据结果更改信息窗口infowindow的内容
 		    getStation();
 		    getWiki();
 		    getWeather();
 		    streetViewService.getPanoramaByLocation(marker.position, radius, getStreetView);
 
+		    //显示标记的信息窗口
         	infowindow.open(map, marker);
         }
     }
 
+    //输入颜色参数，更改标记的颜色
 	function makeMarkerIcon(markerColor) {
 	    var markerImage = new google.maps.MarkerImage(
 	        'https://chart.googleapis.com/chart?chst=d_map_spin&chld=1.15|0|'+ markerColor +
@@ -272,11 +303,11 @@ function initMap(){
 	    );
 	    return markerImage;
 	}
-
+	//激活KO绑定，启动ViewModel函数
     ko.applyBindings(new ViewModel());
-
 }
 
+//将所有与地点相关的属性放进在地点模型Location作为Knockout监控对象
 var Location = function(data){
 	this.title = ko.observable(data.title);
 	this.lat = ko.observable(data.location.lat);
@@ -286,37 +317,40 @@ var Location = function(data){
 
 var ViewModel = function(){
    var self=this;
-
+   //定义监控属性，与DOM对象绑定
    self.list = ko.observableArray([]);
    self.inputValue = ko.observable('');
    self.mapMarkers = ko.observableArray(markers);
-
+   //遍历数组对象的所有元素，生成Location实例存储在self.list里
    locations.forEach(function(locationItem){
-   	self.list.push(new Location(locationItem));
+   		self.list.push(new Location(locationItem));
    });
-
+   //列表与标记绑定，当列表的子项被点击时，将点击事件传给相应的标记
    this.clickLocation = function(clickedData){
     var clickedmarker = clickedData.marker();
     google.maps.event.trigger(clickedmarker, 'click');
    };
 
 
-
+   //跟踪输入框的内容的变化，传入输入框接收到的字符串
    this.filterList = ko.computed(function(){
+   		//如果接收到字符串，则执行该段代码
 	    if(self.inputValue !== ""){
-
+	    	//将输入的字符串转换为大写
 	    	var inputString = self.inputValue().toLowerCase();
+	    	//清空列表的内容
 	     	self.list.removeAll();
-
+	     	//遍历地点数组locations的元素，显示符合要求的标记
 	     	locations.forEach(function(locationItem){
-
-	        locationItem.marker.setMap(null);
-
-	        if(locationItem.title.toLowerCase().includes(inputString)){
-
-	          self.list.push(new Location(locationItem));
-	          locationItem.marker.setMap(map);
-	        }
+	     		//在地图上隐藏元素的标记
+	        	locationItem.marker.setMap(null);
+	        	//如果标记的名称title部分或全部的字符串与输入框传递的字符串相同，则执行该段代码
+	        	if(locationItem.title.toLowerCase().includes(inputString)){
+	        		//在列表显示符合条件的标记名称
+	          		self.list.push(new Location(locationItem));
+	          		//在地图上显示符合条件的标记
+	         	    locationItem.marker.setMap(map);
+	            }
 	        });
 	    }
     }, this);
