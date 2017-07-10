@@ -91,7 +91,7 @@ function initMap(){
 		        if (status == google.maps.StreetViewStatus.OK) {
 		            var nearStreetViewLocation = data.location.latLng;
 		            var heading = google.maps.geometry.spherical.computeHeading(nearStreetViewLocation, marker.position);
-
+		            $("#pano").text("");
 		            $("#pano").css('height','200px');
 
 		            var panoramaOptions = {
@@ -161,7 +161,7 @@ function initMap(){
 
 	        infowindow.setContent(
 	    	    '<div id="Information"><div id="markertitle">' + marker.title +
-	    	    '</div><div id="pano"></div>'+
+	    	    '</div><div id="pano">街景地图正在加载...</div>'+
 	    	    '<div id="wiki"></div>'+
 	    	    '<div><h4>附近的公交站有：</h4><ul id="stationList"></ul></div></div>'
 	    	);
