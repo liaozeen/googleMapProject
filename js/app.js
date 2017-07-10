@@ -151,12 +151,14 @@ function initMap(){
 		                //筛选返回的结果，只显示维基百科的文章标题和标记的名称相一致的结果
 		                for(var i=0;i<articleHealine.length;i++){
 		                    if(articleHealine[i]===markertitle){
+		                    	$("#wiki").text("");
 		                        $("#wiki").append('<p>'+articleSummary[i]+'</p>'+' '+'<a href="'+articleUrl[i]+'">'+'维基百科：'+articleHealine[i]+'</a>');
 		                    }
 		                }
 		                //如果没有与标记的名称相同的维基百科内容，则在信息窗口显示错误提示
 		                if($("#wiki").text()===""){
 		                	$("#wiki").css('text-align','center');
+		                	$("#wiki").text("");
 		                	$("#wiki").append('<p>===没有相关的维基百科===</p>');
 		                }
 	                }
@@ -175,6 +177,7 @@ function initMap(){
 	                	//请求成功
 	                	if(data.status==='0'){
 	                		var nearbyStation =data.result;
+	                		$("#stationList").text("");
 	                		//在信息窗口显示最多五个公交站信息
 	                		for(var i= 0;i<5;i++){
 	                			var nearStation = nearbyStation[i].station;
@@ -184,6 +187,7 @@ function initMap(){
 	                		}
 	                	}else{
 	                		//处理错误，并显示在信息窗口
+	                		$("#stationList").text("");
 	                		$('#stationList').append('<p>错误提示：'+data.msg+'</p>');
 	                	}
 
@@ -255,6 +259,7 @@ function initMap(){
 	                		}
 
 	                		//在信息窗口信息标记所在位置的实时天气情况
+	                		$("#weather").text("");
 	                		$('#weather').append('<li>温度：'+temperature+'</li>'+
 	                			'<li>天气：'+skycon+'</li>'+
 	                			'<li>降雨情况：'+precipitation+'</li>'+
@@ -264,6 +269,7 @@ function initMap(){
 
 	                	}else{
 	                		//处理错误，并显示在信息窗口
+	                		$("#weather").text("");
 	                		$('#weather').append('<p>错误提示：'+data.error+'</p>');
 	                	}
 
@@ -274,10 +280,10 @@ function initMap(){
 		    //为标记的信息窗口添加内容
 	        infowindow.setContent(
 	    	    '<div id="markertitle">' + marker.title +
-	    	    '</div><div id="Information"><div id="pano">街景地图正在加载...</div>'+
-	    	    '<div id="wiki"></div>'+
-	    	    '<div><h4>附近的公交站有：</h4><ul id="stationList"></ul></div>'+
-	    	    '<div><h4>实时天气：</h4><ul id="weather"></ul></div></div>'
+	    	    '</div><div id="Information"><div id="pano">正在加载街景地图...</div>'+
+	    	    '<div id="wiki">正在加载维基百科...</div>'+
+	    	    '<div><h4>附近的公交站有：</h4><ul id="stationList">正在加载公交信息...</ul></div>'+
+	    	    '<div><h4>实时天气：</h4><ul id="weather">正在加载天气信息...</ul></div></div>'
 	    	);
 
 	        //运行API的函数，发出请求并处理响应，根据结果更改信息窗口infowindow的内容
