@@ -71,11 +71,7 @@ padding: 0;
 	color: #000066;
 }
 
-#pano{
+#pano，#wiki{
 	width: 100%;
 	text-align:center;
-}
-
-#wiki{
-	width: 100%;
 }
