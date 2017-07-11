@@ -75,3 +75,35 @@ padding: 0;
 	width: 100%;
 	text-align:center;
 }
+
+.open{
+	position: absolute;
+	height: 55px;
+	width: 30px;
+	top: 7px;
+	left: 10px;
+	text-align:center;
+	line-height: 55px;
+	border-radius: 5px;
+	cursor: pointer;
+	font-size: 24px;
+	color: rgb(39, 55, 70);
+	color: #FFF;
+	background-color: rgb(39, 55, 70);
+}
+
+.close{
+	position: absolute;
+	height: 70px;
+	width: 30px;
+	top: 0px;
+	left: 300px;
+	line-height: 70px;
+	border-radius: 0px 10px 10px 0px;
+	text-align:center;
+	cursor: pointer;
+	font-size: 24px;
+	color: rgb(39, 55, 70);
+	color: #FFF;
+	background-color: rgb(39, 55, 70);
+}

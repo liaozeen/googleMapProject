@@ -179,7 +179,10 @@ function initMap(){
 	                		var nearbyStation =data.result;
 	                		$("#stationList").text("");
 	                		//在信息窗口显示最多五个公交站信息
-	                		for(var i= 0;i<5;i++){
+	                		//将for(var i= 0;i<5;i++)改为for(let i in nearbyStation){if(i>4) return;...}
+	                		//修改原因：有些情况下返回的数据少于5个信息，多出来的几个循环就会因数据取不到而报错。
+	                		for(let i in nearbyStation){
+	                			if(i>4) return;
 	                			var nearStation = nearbyStation[i].station;
 	                			var nearDistance = nearbyStation[i].distance;
 
@@ -360,4 +363,16 @@ var ViewModel = function(){
 	        });
 	    }
     }, this);
+
+   //显示侧边栏
+   this.openNav = function(){
+   	 $("#container").css('display','block');
+   	 $(".close").css('display','block');
+   };
+
+   //隐藏侧边栏
+   this.closeNav = function(){
+   	 $("#container").css('display','none');
+   	 $(".close").css('display','none');
+   };
 };
