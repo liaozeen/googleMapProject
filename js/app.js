@@ -103,7 +103,7 @@ function initMap(){
 		    //API的请求格式
 		    var wikiUrl = 'https://zh.wikipedia.org/w/api.php?action=opensearch&search='+markertitle+'&format=json&callback=wikiCallback';
 		    var stationUrl = 'https://api.jisuapi.com/transit/nearby?city=广州&address='+markertitle+'&appkey=4c76bff3355f585d';
-		    var weatherUrl = 'https://api.caiyunapp.com/v2/TAkhjf8d1nlSlspN/'+marker.lng+','+marker.lat+'/realtime.json';
+		    var weatherUrl = 'https://api.caiyunapp.com/v2/GrHSrW6xIME5WtYy/'+marker.lng+','+marker.lat+'/realtime.json';
 
 		    //谷歌街景地图API请求
 		    function getStreetView(data, status) {
