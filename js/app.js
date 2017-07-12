@@ -1,6 +1,8 @@
 var map;
 //创建一个全局的空数组，用于存储实例化后的标记marker
 var markers = [];
+//创建一个全局变量，用于存储当前被点击的标记的id值
+var number = 0;
 var locations = [
 	    {title: '中山大学北校区', location: {lat:23.129857, lng: 113.291691}},
 	  	{title: '华南理工大学', location: {lat: 23.151297, lng: 113.34463}},
@@ -28,9 +30,17 @@ var locations = [
 function initMap(){
 	//生成一个地图实例
     map = new google.maps.Map(document.getElementById('map'), {
-      	center: {lat: 23.109464, lng: 113.318485},
+      	center: {lat: 23.151297, lng:113.291691},
       	zoom: 10,
       	mapTypeControl: false
+    });
+
+    //当地图的中心偏离当前被点击的标记的所在位置时，3秒后地图中央会回到标记的位置
+    map.addListener('center_changed', function() {
+          window.setTimeout(function() {
+          	//获取当前标记的经纬坐标值
+            map.panTo(locations[number].location);
+          }, 3000);
     });
 
     //生成信息窗口实例
@@ -55,7 +65,6 @@ function initMap(){
 			animation: google.maps.Animation.DROP,
 			id:i,
 		});
-
 		//为marker添加新的属性：lat和lng，以便后面的API请求使用标记的经纬度值
 		marker.lat = position.lat;
 		marker.lng = position.lng;
@@ -81,6 +90,17 @@ function initMap(){
 		        obj.setAnimation(null);
 		    }, 2000);
 	    });
+
+	    //当标记被点击时，使标记移到地图中央
+	    marker.addListener('click', function() {
+	    	//获取当前标记的属性id的值，以便将标记的坐标设置为地图的中央的坐标
+	    	number = this.id;
+	    	//地图视野大小更改
+            map.setZoom(11);
+            //设置地图的中央为当前标记的坐标
+            map.setCenter(this.getPosition());
+        });
+
 	}
 
 	function populateInfoWindow(marker, infowindow) {

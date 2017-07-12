@@ -4,6 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" type="text/css" href="css/style.css">
+        <title>Neighborhood Map</title>
     </head>
     <body>
     <div id="map"></div>
@@ -16,6 +17,7 @@
        <ul id="list" data-bind="foreach:list">
             <li class="list-title" data-bind="text: title,click:$parent.clickLocation"></li>
         </ul>
+    </div>
 
     <script src="js/knockout-3.4.2.js"></script>
     <script src="js/jquery-3.2.1.js"></script>
