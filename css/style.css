@@ -4,9 +4,7 @@ height: 100%;
 margin: 0;
 padding: 0;
 }
-html {
-    display: block;
-}
+
 
 #map{
 	bottom:0px;
@@ -34,7 +32,7 @@ html {
 }
 #list{
 	top: 54px;
-	height: 88%;
+	height: 90%;
 	width: 260px;
 	position: absolute;
 	overflow: auto;

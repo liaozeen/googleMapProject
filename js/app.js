@@ -365,7 +365,8 @@ var ViewModel = function(){
    this.filterList = ko.computed(function(){
    		//如果接收到字符串，则执行该段代码
 	    if(self.inputValue !== ""){
-	    	//将输入的字符串转换为大写
+			//将输入的字符串转换为大写
+			//优化：添加toLowerCase方法可以用于同时处理中英文字符串
 	    	var inputString = self.inputValue().toLowerCase();
 	    	//清空列表的内容
 	     	self.list.removeAll();
