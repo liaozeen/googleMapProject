@@ -27,12 +27,13 @@ var locations = [
 	  	{title: '星海音乐学院', location: {lat:23.149802, lng:113.304132}},
 	];
 
+//Google地图API请求成功调用initMap()函数，初始化地图
 function initMap(){
 	//生成一个地图实例
     map = new google.maps.Map(document.getElementById('map'), {
-      	center: {lat: 23.151297, lng:113.291691},
-      	zoom: 10,
-      	mapTypeControl: false
+      	center: {lat: 23.151297, lng:113.291691},//地图中心坐标
+      	zoom: 10,//地图详细倍数
+      	mapTypeControl: false //地图的一些控件，如放大缩小、卫星地图等。true为开启（默认），false为隐藏
     });
 
     //当地图的中心偏离当前被点击的标记的所在位置时，3秒后地图中央会回到标记的位置
@@ -57,13 +58,11 @@ function initMap(){
 
 		//生成标记对象实例
 		var marker = new google.maps.Marker({
-			position:position,
-			title:title,
-			//标记的样式
-			icon: defaultIcon,
-			//标记下落的动画效果
-			animation: google.maps.Animation.DROP,
-			id:i,
+			position:position,//标记的坐标
+			title:title,//标记名称
+			icon: defaultIcon,//标记的样式
+			animation: google.maps.Animation.DROP,	//标记下落的动画效果
+			id:i,//标记的唯一编号
 		});
 		//为marker添加新的属性：lat和lng，以便后面的API请求使用标记的经纬度值
 		marker.lat = position.lat;
@@ -73,18 +72,18 @@ function initMap(){
 		markers.push(marker);
 		//为locations的每个元素添加新的属性：marker对象，以便ViewModel调用
 		locations[i].marker = marker;
-
 		//当标记被点击时，显示信息窗口
 		marker.addListener('click', function() {
+			//this指向当前的标记
         	populateInfoWindow(this, largeInfowindow);
         });
 
 		//当标记被点击时，标记的颜色改变并出现弹跳效果，2秒后恢复原来的颜色并停止弹跳
 	    marker.addListener('click', function() {
-	        this.setIcon(highlightedIcon);
-	        this.setAnimation(google.maps.Animation.BOUNCE);
+	        this.setIcon(highlightedIcon);//改变标记的颜色
+	        this.setAnimation(google.maps.Animation.BOUNCE);//标记弹跳效果
 
-	        var obj=this;
+	        var obj=this;//把当前上下文存储在变量obj中
 		    setTimeout(function() {
 		    	obj.setIcon(defaultIcon);
 		        obj.setAnimation(null);
@@ -117,7 +116,7 @@ function initMap(){
 		    var streetViewService = new google.maps.StreetViewService();
 		    //该变量的作用是寻找标记所在位置的半径为100米内的街景地图
 		    var radius = 100;
-
+			//标记的名称
 		    var markertitle = marker.title;
 
 		    //API的请求格式
@@ -337,6 +336,7 @@ function initMap(){
 }
 
 //将所有与地点相关的属性放进在地点模型Location作为Knockout监控对象
+//模型（数据）
 var Location = function(data){
 	this.title = ko.observable(data.title);
 	this.lat = ko.observable(data.location.lat);
@@ -344,6 +344,7 @@ var Location = function(data){
 	this.marker = ko.observable(data.marker);
 };
 
+//视觉模型（控制器）
 var ViewModel = function(){
    var self=this;
    //定义监控属性，与DOM对象绑定
@@ -356,8 +357,8 @@ var ViewModel = function(){
    });
    //列表与标记绑定，当列表的子项被点击时，将点击事件传给相应的标记
    this.clickLocation = function(clickedData){
-    var clickedmarker = clickedData.marker();
-    google.maps.event.trigger(clickedmarker, 'click');
+    	var clickedmarker = clickedData.marker();
+		google.maps.event.trigger(clickedmarker, 'click');
    };
 
 
